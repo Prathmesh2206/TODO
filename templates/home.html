@@ -37,7 +37,6 @@ Todo List App | All Tasks
 {% endif %}
 
 {% if current_user.designation == "Manager" %}
-<p>Hello {{current_user.username}}</p>
 <h2>Tasks</h2>
 <a href="/add">Add New Task</a>
 <div class="d-flex justify-content-between">
@@ -62,23 +61,23 @@ Todo List App | All Tasks
                 </a>
                 {% endif %}
             </div>
-            <div class="col-md-4">
+            <div class="col-md-2">
                 {% if task.status == "Complete" %}
                 <s>{{task.task}}</s>
                 {% else %}
                 {{task.task}}
                 {% endif %}
             </div>
-            <div class="col-md-2">{{task.due_date.date()}}</div>
+            <div class="col-md-2">Due: {{task.due_date.date()}}</div>
             <div class="col-md-2">{{users[loop.index0]}} </div>
             <div class="col-md-2">
-                <!-- <a href="/toggle_status/{{task.task_no}}"> -->
                 {% if task.status == "Complete" %}
                 <span class="badge bg-success rounded-pill">{{task.status}}</span>
+                {% elif task.status == "In-Progress" %}
+                <span class="badge bg-warning rounded-pill">{{task.status}}</span>
                 {% else %}
                 <span class="badge bg-danger rounded-pill">{{task.status}}</span>
                 {% endif %}
-                <!-- </a> -->
             </div>
             <div class="col-md-2">
                 <a href="/edit/{{task.task_no}}" class="btn btn-warning">
@@ -95,7 +94,7 @@ Todo List App | All Tasks
 {% endif %}
 
 {% if current_user.designation == "Employee" %}
-
+<h2>Tasks</h2>
 <div class="d-flex justify-content-between">
     <div>
         <a href="?view=all">Show All</a> | <a href="?view=completed">Show Completed</a> | <a
@@ -118,22 +117,32 @@ Todo List App | All Tasks
                 </a>
                 {% endif %}
             </div>
-            <div class="col-md-4">
+            <div class="col-md-2">
                 {% if task.status == "Complete" %}
                 <s>{{task.task}}</s>
                 {% else %}
                 {{task.task}}
                 {% endif %}
             </div>
-            <div class="col-md-2">{{task.due_date.date()}}</div>
+            <div class="col-md-2">Due: {{task.due_date.date()}}</div>
             <div class="col-md-2">
-                <!-- <a href="/toggle_status/{{task.task_no}}"> -->
+                {{users[loop.index0]}}
+            </div>
+            <div class="col-md-2">
                 {% if task.status == "Complete" %}
                 <span class="badge bg-success rounded-pill">{{task.status}}</span>
+                {% elif task.status == "In-Progress" %}
+                <span class="badge bg-warning rounded-pill">{{task.status}}</span>
                 {% else %}
                 <span class="badge bg-danger rounded-pill">{{task.status}}</span>
                 {% endif %}
-                <!-- </a> -->
+            </div>
+            <div class="col-md-2">
+                {% if task.status == "Extension Requested" %}
+                <a href="#" class="btn btn-secondary" disabled>Request Extension</a>
+                {% else %}
+                <a href="/request_extension/{{task.task_no}}" class="btn btn-secondary">Request Extension</a>
+                {% endif %}
             </div>
             <!-- <div class="col-md-2">
                 <a href="/edit/{{task.task_no}}" class="btn btn-warning">
