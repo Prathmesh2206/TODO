@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///todolistnew.sqlite3"
 db = SQLAlchemy(app)
 
-class Person(db.Model):
+class Person(db.Model): 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     addresses = db.relationship('Address', backref='person', lazy=True)

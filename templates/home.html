@@ -5,7 +5,41 @@ Todo List App | All Tasks
 {% endblock %}
 
 {% block content %}
-<h2>Tasks</h2> <br>
+
+{% if current_user.is_authenticated %}
+
+{% if current_user.designation == "Admin" %}
+<h1>Admin Panel</h1>
+<a href="/register">Create new user</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Username</th>
+            <th scope="col">Designation</th>
+            <th scope="col">Department</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <th scope="row">{{user.id}} </th>
+            <td>{{user.username}}</td>
+            <td>{{user.designation}}</td>
+            <td>{{ departments[user.department]}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% endif %}
+
+{% if current_user.designation == "Manager" %}
+<p>Hello {{current_user.username}}</p>
+<h2>Tasks</h2>
+<a href="/add">Add New Task</a>
 <div class="d-flex justify-content-between">
     <div>
         <a href="?view=all">Show All</a> | <a href="?view=completed">Show Completed</a> | <a
@@ -57,5 +91,70 @@ Todo List App | All Tasks
     </li>
     {% endfor %}
 </ul>
+{% endif %}
+
+{% if current_user.designation == "Employee" %}
+
+<div class="d-flex justify-content-between">
+    <div>
+        <a href="?view=all">Show All</a> | <a href="?view=completed">Show Completed</a> | <a
+            href="?view=in_progress">Show In-Progress</a>
+    </div>
+</div>
+<br>
+<ul class="list-group list-group-flush">
+    {% for task in tasks %}
+    <li class="list-group-item">
+        <div class="row">
+            <div class="col-md-2">
+                {% if task.status == "Complete" %}
+                <a href="/toggle_status/{{task.task_no}}" class="btn btn-secondary btn-sm">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                </a>
+                {% else %}
+                <a href="/toggle_status/{{task.task_no}}" class="btn btn-outline-secondary  btn-sm">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                </a>
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                {% if task.status == "Complete" %}
+                <s>{{task.task}}</s>
+                {% else %}
+                {{task.task}}
+                {% endif %}
+            </div>
+            <div class="col-md-2">{{task.due_date.date()}}</div>
+            <div class="col-md-2">
+                <!-- <a href="/toggle_status/{{task.task_no}}"> -->
+                {% if task.status == "Complete" %}
+                <span class="badge bg-success rounded-pill">{{task.status}}</span>
+                {% else %}
+                <span class="badge bg-danger rounded-pill">{{task.status}}</span>
+                {% endif %}
+                <!-- </a> -->
+            </div>
+            <!-- <div class="col-md-2">
+                <a href="/edit/{{task.task_no}}" class="btn btn-warning">
+                    <i class="fa fa-edit" aria-hidden="true"></i>
+                </a>
+                <a href="/delete/{{task.task_no}}" class="btn btn-danger">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </a>
+            </div> -->
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endif %}
+
+{% else %}
+<h1>Welcome to Todo List App</h1>
+<p>Please log in</p>
+{% endif %}
+
+
+
 
 {% endblock %}

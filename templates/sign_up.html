@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}
+Todo List App | All Tasks
+{% endblock %}
+
+{% block content %}
+<h1>Create an account</h1>
+<form action="#" method="post">
+    <div class="mb-3">
+
+        <label for="username" class="form-label">Username:</label>
+        <input type="text" class="form-control" name="username" />
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password:</label>
+        <input type="password" class="form-control" name="password" />
+    </div>
+    <div class="mb-3">
+        <!-- <label for="designation">Designation:</label>
+    <input type="select" name="designation" /> -->
+        <label for="designation" class="form-label">Designation</label>
+        <select class="form-control" class="form-control" id="designation" name="designation">
+            <option>Admin</option>
+            <option>Manager</option>
+            <option>Employee</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="department" class="form-label">Department</label>
+        <select class="form-control" class="form-control" id="department" name="department">
+            <option value="0">Administration</option>
+            <option value="1">Quality Assurance</option>
+            <option value="2">Network Security</option>
+            <option value="3">Remote Browser Isolation</option>
+        </select>
+    </div>
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}
