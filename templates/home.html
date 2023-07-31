@@ -70,6 +70,7 @@ Todo List App | All Tasks
                 {% endif %}
             </div>
             <div class="col-md-2">{{task.due_date.date()}}</div>
+            <div class="col-md-2">{{users[loop.index0]}} </div>
             <div class="col-md-2">
                 <!-- <a href="/toggle_status/{{task.task_no}}"> -->
                 {% if task.status == "Complete" %}

@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, url_for, render_template
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, logout_user
+from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user
 from datetime import datetime
 
 
@@ -102,24 +102,58 @@ def logout():
 
 @app.route("/")
 def home():
-    users = Users.query.all()
-    tasks = Task.query.all()
-    return render_template("home.html", users=users, departments=departments, tasks=tasks)
+    if current_user.is_authenticated:
+        if current_user.designation == 'Admin':
+            users = Users.query.all()    
+            return render_template("home.html", users=users, departments=departments)
+        if current_user.designation == 'Manager':
+            tasks = Task.query.filter_by(created_by=current_user.id)
+            users=Users.query.all();
+            assigned_users=[]
+            for i in tasks:
+                 for j in users:
+                      if i.assigned_to==j.id:
+                        assigned_users.append(j.username)
+                        break;
+            if request.args.get("view"):
+                if request.args.get("view") == "in_progress":
+                    tasks = list(Task.query.filter_by(status="In-Progress"))
+                elif request.args.get("view") == "completed":
+                    tasks = list(Task.query.filter_by(status="Complete"))
+                else:
+                    tasks = Task.query.all()
+            return render_template("home.html", tasks=tasks,users=assigned_users)
+        if current_user.designation == 'Employee':
+            tasks = Task.query.filter_by(assigned_to=current_user.id)
+            if request.args.get("view"):
+                if request.args.get("view") == "in_progress":
+                    tasks = list(Task.query.filter_by(status="In-Progress"))
+                elif request.args.get("view") == "completed":
+                    tasks = list(Task.query.filter_by(status="Complete"))
+                else:
+                    tasks = Task.query.all()
+            return render_template("home.html",tasks=tasks)
+    return render_template("home.html")
  
 @app.route("/add", methods=["GET", "POST"])
 def create_task():
-    users = Users.query.filter_by(department = 1) # GET ONLY USERS OF CURRENT USER KA DEPARTMENT, and not a manager
-    if request.method == "POST":
-        task = Task(
-            task=request.form["task"],
-            due_date=datetime.fromisoformat(request.form["due_date"]),
-            assigned_to=request.form["assign_to"],
-            created_by=request.form["created_by"]
-        )
-        db.session.add(task)
-        db.session.commit()
-        return redirect("/")
-    return render_template("add.html", users=users)
+    if current_user.designation=='Manager':
+        users = Users.query.filter_by(department = 1) # GET ONLY USERS OF CURRENT USER KA DEPARTMENT, and not a manager
+        # print(current_user)
+        subordinates=list(Users.query.filter_by(department=current_user.department ))
+        subordinates.remove(current_user)
+        # print(subordinates)
+        if request.method == "POST":
+            task = Task(
+                task=request.form["task"],
+                due_date=datetime.fromisoformat(request.form["due_date"]),
+                assigned_to=request.form["assign_to"],
+                created_by=request.form["created_by"]
+            )
+            db.session.add(task)
+            db.session.commit()
+            return redirect("/")
+        return render_template("add.html", users=users)
 
 
 @app.route("/toggle_status/<int:no>")
@@ -132,20 +166,25 @@ def toggle_status(no):
 
 @app.route("/edit/<int:no>", methods=["GET", "POST"])
 def edit_task(no):
-    task = list(Task.query.filter_by(task_no=no))[0]
-    if request.method == "POST":
-        task.task = request.form["task"]
-        task.due_date = datetime.fromisoformat(request.form["due_date"])
-        db.session.commit()
-        return redirect("/")
-    return render_template("edit.html", task=task)
+    if current_user.designation=='Manager':
+        task = list(Task.query.filter_by(task_no=no))[0]
+        if request.method == "POST":
+            task.task = request.form["task"]
+            task.due_date = datetime.fromisoformat(request.form["due_date"])
+            db.session.commit()
+            return redirect("/")
+        return render_template("edit.html", task=task)
+    else:
+         return render_template("error.html")
+    return render_template("home.html")
 
 
 @app.route("/delete/<int:no>")
 def delete_task(no):
-    task = list(Task.query.filter_by(task_no=no))[0]
-    db.session.delete(task)
-    db.session.commit()
+    if current_user.designation=='Manager':
+        task = list(Task.query.filter_by(task_no=no))[0]
+        db.session.delete(task)
+        db.session.commit()
     return redirect("/")
 
  
