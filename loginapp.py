@@ -2,11 +2,13 @@ from flask import Flask, request, redirect, url_for, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user
 from datetime import datetime
+from flask_bcrypt import Bcrypt
 
 
 # Create a flask application
 app = Flask(__name__)
 
+bcrypt = Bcrypt(app)
 # Tells flask-sqlalchemy what database to connect to
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite"
 # Enter a secret key
@@ -71,9 +73,10 @@ def loader_user(user_id):
 def register():
     # If the user made a POST request, create a new user
     if request.method == "POST":
+        password=bcrypt.generate_password_hash(request.form.get("password")).decode('utf-8')
         user = Users(
             username=request.form.get("username"),
-            password=request.form.get("password"),
+            password=password,
             designation=request.form.get("designation"),
             department=request.form.get("department"),
         )
@@ -96,7 +99,7 @@ def login():
         user = Users.query.filter_by(username=request.form.get("username")).first()
         # Check if the password entered is the
         # same as the user's password
-        if user.password == request.form.get("password"):
+        if bcrypt.check_password_hash(user.password,request.form.get("password")):
             # Use the login_user method to log in the user
             login_user(user)
             return redirect(url_for("home"))
