@@ -10,7 +10,7 @@ Todo List App | All Tasks
 
 {% if current_user.designation == "Admin" %}
 <h1>Admin Panel</h1>
-<a href="/register">Create new user</a>
+<a href="/register" class="btn btn-primary">Create new user</a>
 
 <table class="table">
     <thead>
@@ -38,19 +38,29 @@ Todo List App | All Tasks
 
 {% if current_user.designation == "Manager" %}
 <h2>Tasks</h2>
-<a href="/add">Add New Task</a>
-<div class="d-flex justify-content-between">
-    <div>
-        <a href="?view=all">Show All</a> | <a href="?view=completed">Show Completed</a> | <a
-            href="?view=in_progress">Show In-Progress</a>
+<a href="/add" class="btn btn-primary">Add New Task</a>
+<div class="d-flex justify-content-between my-2">
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <a class="btn btn-outline-secondary" href="?view=all">Show All</a>
+        <a class="btn btn-outline-secondary" href="?view=completed">Show Completed</a>
+        <a class="btn btn-outline-secondary" href="?view=in_progress">Show In-Progress</a>
     </div>
 </div>
-<br>
 <ul class="list-group list-group-flush">
+    <li class="list-group-item">
+        <div class="row fw-bold">
+            <div class="col-md-1"></div>
+            <div class="col-md-2">Task</div>
+            <div class="col-md-2">Due</div>
+            <div class="col-md-2">Assigned To</div>
+            <div class="col-md-2">Status</div>
+            <div class="col-md-2"></div>
+        </div>
+    </li>
     {% for task in tasks %}
     <li class="list-group-item">
         <div class="row">
-            <div class="col-md-2">
+            <div class="col-md-1">
                 {% if task.status == "Complete" %}
                 <a href="/toggle_status/{{task.task_no}}" class="btn btn-secondary btn-sm">
                     <i class="fa fa-check" aria-hidden="true"></i>
@@ -68,16 +78,24 @@ Todo List App | All Tasks
                 {{task.task}}
                 {% endif %}
             </div>
-            <div class="col-md-2">Due: {{task.due_date.date()}}</div>
+            <div class="col-md-2">
+                {% if task.due_date < now %} <p class="text-danger">{{task.due_date.date()}}</p>
+                    {% else %}
+                    <p class="">{{task.due_date.date()}}</p>
+                    {% endif %}
+            </div>
             <div class="col-md-2">{{users[loop.index0]}} </div>
             <div class="col-md-2">
-                {% if task.status == "Complete" %}
-                <span class="badge bg-success rounded-pill">{{task.status}}</span>
-                {% elif task.status == "In-Progress" %}
-                <span class="badge bg-warning rounded-pill">{{task.status}}</span>
-                {% else %}
-                <span class="badge bg-danger rounded-pill">{{task.status}}</span>
-                {% endif %}
+                {% if task.due_date < now %} <span class="badge bg-danger rounded-pill">Overdue</span>
+                    {% endif%}
+
+                    {% if task.status == "Complete" %}
+                    <span class="badge bg-success rounded-pill">{{task.status}}</span>
+                    {% elif task.status == "In-Progress" %}
+                    <span class="badge bg-warning rounded-pill">{{task.status}}</span>
+                    {% else %}
+                    <span class="badge bg-primary rounded-pill">{{task.status}}</span>
+                    {% endif %}
             </div>
             <div class="col-md-2">
                 <a href="/edit/{{task.task_no}}" class="btn btn-warning">
@@ -95,18 +113,28 @@ Todo List App | All Tasks
 
 {% if current_user.designation == "Employee" %}
 <h2>Tasks</h2>
-<div class="d-flex justify-content-between">
-    <div>
-        <a href="?view=all">Show All</a> | <a href="?view=completed">Show Completed</a> | <a
-            href="?view=in_progress">Show In-Progress</a>
+<div class="d-flex justify-content-between my-2">
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <a class="btn btn-outline-secondary" href="?view=all">Show All</a>
+        <a class="btn btn-outline-secondary" href="?view=completed">Show Completed</a>
+        <a class="btn btn-outline-secondary" href="?view=in_progress">Show In-Progress</a>
     </div>
 </div>
-<br>
 <ul class="list-group list-group-flush">
+    <li class="list-group-item">
+        <div class="row fw-bold">
+            <div class="col-md-1"></div>
+            <div class="col-md-2">Task</div>
+            <div class="col-md-2">Due</div>
+            <div class="col-md-2">Assigned To</div>
+            <div class="col-md-2">Status</div>
+            <div class="col-md-2"></div>
+        </div>
+    </li>
     {% for task in tasks %}
     <li class="list-group-item">
         <div class="row">
-            <div class="col-md-2">
+            <div class="col-md-1">
                 {% if task.status == "Complete" %}
                 <a href="/toggle_status/{{task.task_no}}" class="btn btn-secondary btn-sm">
                     <i class="fa fa-check" aria-hidden="true"></i>
@@ -124,24 +152,32 @@ Todo List App | All Tasks
                 {{task.task}}
                 {% endif %}
             </div>
-            <div class="col-md-2">Due: {{task.due_date.date()}}</div>
+            <div class="col-md-2">
+                {% if task.due_date < now %} <p class="text-danger">{{task.due_date.date()}}</p>
+                    {% else %}
+                    <p class="">{{task.due_date.date()}}</p>
+                    {% endif %}
+            </div>
             <div class="col-md-2">
                 {{users[loop.index0]}}
             </div>
             <div class="col-md-2">
-                {% if task.status == "Complete" %}
-                <span class="badge bg-success rounded-pill">{{task.status}}</span>
-                {% elif task.status == "In-Progress" %}
-                <span class="badge bg-warning rounded-pill">{{task.status}}</span>
-                {% else %}
-                <span class="badge bg-danger rounded-pill">{{task.status}}</span>
-                {% endif %}
+                {% if task.due_date < now %} <span class="badge bg-danger rounded-pill">Overdue</span>
+                    {% endif%}
+
+                    {% if task.status == "Complete" %}
+                    <span class="badge bg-success rounded-pill">{{task.status}}</span>
+                    {% elif task.status == "In-Progress" %}
+                    <span class="badge bg-warning rounded-pill">{{task.status}}</span>
+                    {% else %}
+                    <span class="badge bg-primary rounded-pill">{{task.status}}</span>
+                    {% endif %}
             </div>
             <div class="col-md-2">
                 {% if task.status == "Extension Requested" %}
-                <a href="#" class="btn btn-secondary" disabled>Request Extension</a>
+                <a href="/request_extension/{{task.task_no}}" class="btn btn-secondary disabled">Request Extension</a>
                 {% else %}
-                <a href="/request_extension/{{task.task_no}}" class="btn btn-secondary">Request Extension</a>
+                <a href="/request_extension/{{task.task_no}}" class="btn btn-primary">Request Extension</a>
                 {% endif %}
             </div>
             <!-- <div class="col-md-2">

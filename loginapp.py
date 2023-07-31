@@ -73,7 +73,9 @@ def loader_user(user_id):
 def register():
     # If the user made a POST request, create a new user
     if request.method == "POST":
-        password=bcrypt.generate_password_hash(request.form.get("password")).decode('utf-8')
+        password = bcrypt.generate_password_hash(request.form.get("password")).decode(
+            "utf-8"
+        )
         user = Users(
             username=request.form.get("username"),
             password=password,
@@ -99,7 +101,7 @@ def login():
         user = Users.query.filter_by(username=request.form.get("username")).first()
         # Check if the password entered is the
         # same as the user's password
-        if bcrypt.check_password_hash(user.password,request.form.get("password")):
+        if bcrypt.check_password_hash(user.password, request.form.get("password")):
             # Use the login_user method to log in the user
             login_user(user)
             return redirect(url_for("home"))
@@ -119,9 +121,13 @@ def home():
     if current_user.is_authenticated:
         if current_user.designation == "Admin":
             users = Users.query.all()
-            return render_template("home.html", users=users, departments=departments)
+            return render_template(
+                "home.html", users=users, departments=departments, now=datetime.utcnow()
+            )
         if current_user.designation == "Manager":
-            tasks = Task.query.filter_by(created_by=current_user.id)
+            tasks = Task.query.filter_by(created_by=current_user.id).order_by(
+                Task.status.desc()
+            )
             users = Users.query.all()
             assigned_users = []
             for i in tasks:
@@ -136,7 +142,9 @@ def home():
                     tasks = list(Task.query.filter_by(status="Complete"))
                 else:
                     tasks = Task.query.all()
-            return render_template("home.html", tasks=tasks, users=assigned_users)
+            return render_template(
+                "home.html", tasks=tasks, users=assigned_users, now=datetime.utcnow()
+            )
         if current_user.designation == "Employee":
             tasks = Task.query.filter_by(assigned_to=current_user.id)
             users = Users.query.all()
@@ -153,7 +161,9 @@ def home():
                     tasks = list(Task.query.filter_by(status="Complete"))
                 else:
                     tasks = Task.query.all()
-            return render_template("home.html", tasks=tasks, users=assigned_users)
+            return render_template(
+                "home.html", tasks=tasks, users=assigned_users, now=datetime.utcnow()
+            )
     return render_template("home.html")
 
 
@@ -177,7 +187,7 @@ def create_task():
             db.session.add(task)
             db.session.commit()
             return redirect("/")
-        return render_template("add.html", users=users)
+        return render_template("add.html", users=subordinates)
 
 
 @app.route("/toggle_status/<int:no>")
@@ -203,6 +213,8 @@ def edit_task(no):
         if request.method == "POST":
             task.task = request.form["task"]
             task.due_date = datetime.fromisoformat(request.form["due_date"])
+            if task.status == "Extension Requested":
+                task.status = "In-Progress"
             db.session.commit()
             return redirect("/")
         return render_template("edit.html", task=task)
