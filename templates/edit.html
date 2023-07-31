@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}
+Todo List App | Edit Task
+{% endblock %}
+
+{% block content %}
+<h1>Edit Task</h1> <br>
+
+<form class="col-md-4" method="POST" action="/edit/{{task.task_no}}">
+    <div class="mb-3">
+        <label for="task" class="form-label">Task</label>
+        <input type="text" class="form-control" id="task" name="task" value="{{task.task}}">
+    </div>
+    <div class="mb-3">
+        <label for="due_date" class="form-label">Due Date</label>
+        <input type="date" class="form-control" id="due_date" name="due_date" value="{{task.due_date.date()}}">
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
+    <a href="/" class="btn btn-primary">Cancel</button>
+</form>
+
+{% endblock %}

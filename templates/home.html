@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}
+Todo List App | All Tasks
+{% endblock %}
+
+{% block content %}
+<h2>Tasks</h2> <br>
+<div class="d-flex justify-content-between">
+    <div>
+        <a href="?view=all">Show All</a> | <a href="?view=completed">Show Completed</a> | <a
+            href="?view=in_progress">Show In-Progress</a>
+    </div>
+</div>
+<br>
+<ul class="list-group list-group-flush">
+    {% for task in tasks %}
+    <li class="list-group-item">
+        <div class="row">
+            <div class="col-md-2">
+                {% if task.status == "Complete" %}
+                <a href="/toggle_status/{{task.task_no}}" class="btn btn-secondary btn-sm">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                </a>
+                {% else %}
+                <a href="/toggle_status/{{task.task_no}}" class="btn btn-outline-secondary  btn-sm">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                </a>
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                {% if task.status == "Complete" %}
+                <s>{{task.task}}</s>
+                {% else %}
+                {{task.task}}
+                {% endif %}
+            </div>
+            <div class="col-md-2">{{task.due_date.date()}}</div>
+            <div class="col-md-2">
+                <!-- <a href="/toggle_status/{{task.task_no}}"> -->
+                {% if task.status == "Complete" %}
+                <span class="badge bg-success rounded-pill">{{task.status}}</span>
+                {% else %}
+                <span class="badge bg-danger rounded-pill">{{task.status}}</span>
+                {% endif %}
+                <!-- </a> -->
+            </div>
+            <div class="col-md-2">
+                <a href="/edit/{{task.task_no}}" class="btn btn-warning">
+                    <i class="fa fa-edit" aria-hidden="true"></i>
+                </a>
+                <a href="/delete/{{task.task_no}}" class="btn btn-danger">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
